@@ -21,51 +21,35 @@ agent:
 # See https://docs.semaphoreci.com/article/62-concepts
 
 
- - name: Install dependencies
-   task:
-     jobs:
-       - name: bundle install
-         commands:
-           - checkout
-           - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
-           - bundle install --deployment --path .bundle
-           - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
+- name: Install dependencies
+  task:
+    jobs:
+      - name: bundle install
+        commands:
+          - checkout
+          - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
+          - bundle install --deployment --path .bundle
+          - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
 blocks:
   - name: Install dependencies
     task:
       jobs:
         - name: bundle install
           commands:
-            # Checkout code from Git repository. This step is mandatory if the
-            # job is to work with your code.
-            # Optionally you may use --use-cache flag to avoid roundtrip to
-            # remote repository.
-            # See https://docs.semaphoreci.com/article/54-toolbox-reference#checkout
             - checkout
-
-            # Restore dependencies from cache, command won't fail if it's
-            # missing.
-            # More on caching: https://docs.semaphoreci.com/article/149-caching
             - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
             - bundle install --deployment --path .bundle
-            # Store the latest version of dependencies in cache,
-            # to be used in next blocks and future workflows:
             - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
 
-  - name: Tests
-    task:
-      jobs:
-        - name: rspec
-          commands:
-            - checkout
-            - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
-            # Bundler requires `install` to run even though cache has been
-            # restored, but generally this is not the case with other package
-            # managers. Installation will not actually run and command will
-            # finish quickly:
-            - bundle install --deployment --path .bundle
-            # Run unit tests:
-            - bundle exec rspec
+- name: Tests
+  task:
+    jobs:
+      - name: rspec
+        commands:
+          - checkout
+          - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
+          - bundle install --deployment --path .bundle
+          - bundle exec rspec
 
 # If all tests pass, we move on to build a Docker image.
 # This is a job for a separate pipeline which we link with a promotion.

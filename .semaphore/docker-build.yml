@@ -19,7 +19,7 @@ blocks:
         commands:
           # Authenticate with Docker Hub
           # using environment variables in markoa-dockerhub secret:
-          - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+          - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_USERNAME}"
           - checkout
 
           # Use docker layer caching and reuse unchanged layers to build a new

@@ -20,7 +20,7 @@ agent:
 # commands to execute.
 # See https://docs.semaphoreci.com/article/62-concepts
 
-blocks:
+
  - name: Install dependencies
    task:
      jobs:

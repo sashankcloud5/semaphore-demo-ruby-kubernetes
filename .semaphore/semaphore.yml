@@ -20,16 +20,18 @@ agent:
 # commands to execute.
 # See https://docs.semaphoreci.com/article/62-concepts
 
-blocks:
-- name: Install dependencies
-  task:
-    jobs:
-      - name: bundle install
-        commands:
-          - checkout
-          - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
-          - bundle install --deployment --path .bundle
-          - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
+
+  - name: Install dependencies
+    task:
+      jobs:
+        - name: bundle install
+          commands:
+            - checkout
+            - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
+            - bundle install --deployment --path .bundle
+            - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
+
+
 blocks:
   - name: Install dependencies
     task:
@@ -41,15 +43,15 @@ blocks:
             - bundle install --deployment --path .bundle
             - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
 
-- name: Tests
-  task:
-    jobs:
-      - name: rspec
-        commands:
-          - checkout
-          - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
-          - bundle install --deployment --path .bundle
-          - bundle exec rspec
+  - name: Tests
+    task:
+      jobs:
+        - name: rspec
+          commands:
+            - checkout
+            - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
+            - bundle install --deployment --path .bundle
+            - bundle exec rspec
 
 # If all tests pass, we move on to build a Docker image.
 # This is a job for a separate pipeline which we link with a promotion.

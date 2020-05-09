@@ -31,18 +31,6 @@ blocks:
             - bundle install --deployment --path .bundle
             - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
 
-
-blocks:
-  - name: Install dependencies
-    task:
-      jobs:
-        - name: bundle install
-          commands:
-            - checkout
-            - cache restore gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock),gems-$SEMAPHORE_GIT_BRANCH,gems-master
-            - bundle install --deployment --path .bundle
-            - cache store gems-$SEMAPHORE_GIT_BRANCH-$(checksum Gemfile.lock) .bundle
-
   - name: Tests
     task:
       jobs:
